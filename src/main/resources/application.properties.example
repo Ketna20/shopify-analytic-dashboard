@@ -8,7 +8,6 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.show-sql=true
 
-# Shopify app credentials
+# Shopify app credentials (kept on backend; do NOT send client_secret from frontend)
 shopify.client-id=CHANGE_ME
 shopify.client-secret=CHANGE_ME
-

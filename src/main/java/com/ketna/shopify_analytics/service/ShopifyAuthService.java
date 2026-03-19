@@ -26,6 +26,10 @@ public class ShopifyAuthService {
     private String clientSecret;
 
     public String generateAccessToken(String shopDomain) {
+        return generateAccessToken(shopDomain, clientId, clientSecret);
+    }
+
+    public String generateAccessToken(String shopDomain, String clientId, String clientSecret) {
         String url = "https://" + shopDomain + "/admin/oauth/access_token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -38,8 +42,11 @@ public class ShopifyAuthService {
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
 
+        @SuppressWarnings("rawtypes")
         ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
-        Object token = response.getBody() == null ? null : response.getBody().get("access_token");
+        @SuppressWarnings("rawtypes")
+        Map body = response.getBody();
+        Object token = body == null ? null : body.get("access_token");
 
         if (token == null) {
             throw new IllegalStateException("Shopify access_token missing in response");

@@ -30,8 +30,11 @@ public class Store {
     @Column(name = "shop_domain", length = 255)
     private String shopDomain;
 
-    @Column(name = "access_token", columnDefinition = "text")
-    private String accessToken;
+    @Column(name = "client_id", length = 255)
+    private String clientId;
+
+    @Column(name = "client_secret", columnDefinition = "text")
+    private String clientSecret;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

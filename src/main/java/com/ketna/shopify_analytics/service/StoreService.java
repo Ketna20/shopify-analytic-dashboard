@@ -15,14 +15,13 @@ public class StoreService {
     private final StoreRepository storeRepository;
 
     public Store connectStore(ConnectStoreRequest request) {
-        return saveStore(request.getShopDomain(), request.getAccessToken());
+        return saveStore(request.getShopDomain());
     }
 
-    public Store saveStore(String shopDomain, String accessToken) {
+    public Store saveStore(String shopDomain) {
 
         Store store = Store.builder()
                 .shopDomain(shopDomain)
-                .accessToken(accessToken)
                 .createdAt(LocalDateTime.now())
                 .build();
 
