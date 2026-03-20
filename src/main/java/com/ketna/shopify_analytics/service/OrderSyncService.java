@@ -1,21 +1,21 @@
 package com.ketna.shopify_analytics.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ketna.shopify_analytics.dto.shopify.ShopifyCustomerDTO;
+import com.ketna.shopify_analytics.dto.shopify.ShopifyLineItemDTO;
 import com.ketna.shopify_analytics.dto.shopify.ShopifyOrderDTO;
 import com.ketna.shopify_analytics.dto.shopify.ShopifyOrderResponse;
-import com.ketna.shopify_analytics.entity.Customer;
-import com.ketna.shopify_analytics.entity.Order;
-import com.ketna.shopify_analytics.entity.Store;
-import com.ketna.shopify_analytics.repository.StoreRepository;
-import com.ketna.shopify_analytics.repository.OrderRepository;
-import com.ketna.shopify_analytics.repository.CustomerRepository;
+import com.ketna.shopify_analytics.entity.*;
+import com.ketna.shopify_analytics.repository.*;
 import lombok.RequiredArgsConstructor;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,9 +27,12 @@ public class OrderSyncService {
     private final StoreRepository storeRepository;
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
+    private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
     private final ShopifyOrderService shopifyOrderService;
-
-    public void syncOrders(Long storeId) {
+    @Autowired
+    private ObjectMapper objectMapper;
+    public void syncOrders(Long storeId)  {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException("Store not found with id: " + storeId));
 
@@ -38,49 +41,83 @@ public class OrderSyncService {
         // For now, just print/log the raw JSON response
         log.info("Fetched orders for store {}: {}", store.getShopDomain(), ordersJson);
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ShopifyOrderResponse orderResponse = objectMapper.readValue(ordersJson, ShopifyOrderResponse.class);
 
-        ShopifyOrderResponse orderResponse = objectMapper.readValue(ordersJson, ShopifyOrderResponse.class);
 
-        for (ShopifyOrderDTO orderDTO : orderResponse.getOrders()) {
-            System.out.println("Order ID: " + orderDTO.getId());
+            for (ShopifyOrderDTO orderDTO : orderResponse.getOrders()) {
+                System.out.println("Order ID: " + orderDTO.getId());
 
-            ShopifyCustomerDTO customerDTO = orderDTO.getCustomer();
+                ShopifyCustomerDTO customerDTO = orderDTO.getCustomer();
 
-            Customer customer = null;
+                Customer customer = null;
 
-            if (customerDTO != null) {
-                customer = customerRepository
-                        .findByShopifyCustomerId(customerDTO.getId())
-                        .orElseGet(() -> {
-                            Customer newCustomer = Customer.builder()
-                                    .shopifyCustomerId(customerDTO.getId())
-                                    .email(customerDTO.getEmail())
-                                    .firstName(customerDTO.getFirstName())
-                                    .lastName(customerDTO.getLastName())
-                                    .build();
+                if (customerDTO != null) {
+                    customer = customerRepository
+                            .findByShopifyCustomerId(customerDTO.getId())
+                            .orElseGet(() -> {
+                                Customer newCustomer = Customer.builder()
+                                        .shopifyCustomerId(customerDTO.getId())
+                                        .email(customerDTO.getEmail())
+                                        .firstName(customerDTO.getFirstName())
+                                        .lastName(customerDTO.getLastName())
+                                        .build();
 
-                            return customerRepository.save(newCustomer);
-                        });
+                                return customerRepository.save(newCustomer);
+                            });
+                }
+
+
+                Optional<Order> existingOrder =
+                        orderRepository.findByShopifyOrderId(orderDTO.getId());
+
+                Order order;
+
+                if (existingOrder.isPresent()) {
+                    order = existingOrder.get();
+                } else {
+                    order = Order.builder()
+                            .shopifyOrderId(orderDTO.getId())
+                            .orderDate(orderDTO.getCreatedAt().toLocalDateTime())
+                            .totalPrice(orderDTO.getTotalPrice())
+                            .currency(orderDTO.getCurrency())
+                            .customer(customer)
+                            .build();
+
+                    order = orderRepository.save(order);
+                }
+
+                // Now handle line items
+                for (ShopifyLineItemDTO itemDTO : orderDTO.getLineItems()) {
+                    if (itemDTO.getProductId() == null) continue;
+                    Product product = productRepository
+                            .findByShopifyProductId(itemDTO.getProductId())
+                            .orElseGet(() -> productRepository.save(
+                                    Product.builder()
+                                            .shopifyProductId(itemDTO.getProductId())
+                                            .title(itemDTO.getName())
+                                            .build()
+                            ));
+
+                    OrderItem orderItem = OrderItem.builder()
+                            .order(order)
+                            .product(product)
+                            .quantity(itemDTO.getQuantity())
+                            .price(BigDecimal.valueOf(Double.valueOf(String.valueOf(itemDTO.getPrice()))))
+                            .build();
+
+                    Optional<OrderItem> existingItem =
+                            orderItemRepository.findByOrderAndProduct(order, product);
+
+                    if (existingItem.isPresent()) {
+                        continue;
+                    }
+
+                    orderItemRepository.save(orderItem);
+                }
             }
-
-            Optional<Order> existingOrder = orderRepository.findByShopifyOrderId(orderDTO.getId());
-
-            if (existingOrder.isPresent()) {
-                log.info("Order already exists, skipping: {}", orderDTO.getId());
-                continue;
-            }
-
-            Order order = Order.builder()
-                    .shopifyOrderId(orderDTO.getId())
-                    .orderDate(orderDTO.getCreatedAt().toLocalDateTime())
-                    .totalPrice(orderDTO.getTotalPrice())
-                    .currency(orderDTO.getCurrency())
-                    .customer(customer)
-                    .build();
-
-            orderRepository.save(order);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse Shopify orders JSON", e);
         }
-
     }
 }
