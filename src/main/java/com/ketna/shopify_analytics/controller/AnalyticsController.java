@@ -1,5 +1,6 @@
 package com.ketna.shopify_analytics.controller;
 
+import com.ketna.shopify_analytics.dto.analytics.RevenueDTO;
 import com.ketna.shopify_analytics.dto.analytics.TopProductDTO;
 import com.ketna.shopify_analytics.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,10 @@ public class AnalyticsController {
     @GetMapping("/top-products")
     public List<TopProductDTO> getTopProducts() {
         return analyticsService.getTopProducts();
+    }
+
+    @GetMapping("/revenue")
+    public List<RevenueDTO> getRevenue() {
+        return analyticsService.getRevenueOverTime();
     }
 }
