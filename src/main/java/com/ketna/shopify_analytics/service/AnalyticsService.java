@@ -1,5 +1,6 @@
 package com.ketna.shopify_analytics.service;
 
+import com.ketna.shopify_analytics.dto.analytics.DashboardKPIDTO;
 import com.ketna.shopify_analytics.dto.analytics.RevenueDTO;
 import com.ketna.shopify_analytics.dto.analytics.TopProductDTO;
 import com.ketna.shopify_analytics.repository.OrderItemRepository;
@@ -29,5 +30,9 @@ public class AnalyticsService {
                         (BigDecimal) r[1]
                 ))
                 .toList();
+    }
+
+    public DashboardKPIDTO getDashboardKPIs() {
+        return orderRepository.getDashboardKPIs();
     }
 }

@@ -1,5 +1,6 @@
 package com.ketna.shopify_analytics.controller;
 
+import com.ketna.shopify_analytics.dto.analytics.DashboardKPIDTO;
 import com.ketna.shopify_analytics.dto.analytics.RevenueDTO;
 import com.ketna.shopify_analytics.dto.analytics.TopProductDTO;
 import com.ketna.shopify_analytics.service.AnalyticsService;
@@ -25,5 +26,10 @@ public class AnalyticsController {
     @GetMapping("/revenue")
     public List<RevenueDTO> getRevenue() {
         return analyticsService.getRevenueOverTime();
+    }
+
+    @GetMapping("/kpis")
+    public DashboardKPIDTO getKPIs() {
+        return analyticsService.getDashboardKPIs();
     }
 }
