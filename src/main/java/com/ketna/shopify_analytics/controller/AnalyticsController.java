@@ -1,8 +1,6 @@
 package com.ketna.shopify_analytics.controller;
 
-import com.ketna.shopify_analytics.dto.analytics.DashboardKPIDTO;
-import com.ketna.shopify_analytics.dto.analytics.RevenueDTO;
-import com.ketna.shopify_analytics.dto.analytics.TopProductDTO;
+import com.ketna.shopify_analytics.dto.analytics.*;
 import com.ketna.shopify_analytics.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,5 +29,15 @@ public class AnalyticsController {
     @GetMapping("/kpis")
     public DashboardKPIDTO getKPIs() {
         return analyticsService.getDashboardKPIs();
+    }
+
+    @GetMapping("/revenue-spikes")
+    public List<RevenueSpikeDTO> getRevenueSpikes() {
+        return analyticsService.getRevenueSpikes();
+    }
+
+    @GetMapping("/momentum-products")
+    public List<MomentumProductDTO> getMomentumProducts() {
+        return analyticsService.getMomentumProducts();
     }
 }
