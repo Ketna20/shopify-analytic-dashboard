@@ -25,5 +25,15 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
         ORDER BY SUM(oi.quantity * oi.price) DESC
     """)
     List<TopProductDTO> findTopProducts();
+
+    @Query("""
+    SELECT p.title, DATE(o.orderDate), SUM(oi.quantity * oi.price)
+    FROM OrderItem oi
+    JOIN oi.order o
+    JOIN oi.product p
+    GROUP BY p.title, DATE(o.orderDate)
+    ORDER BY p.title, DATE(o.orderDate)
+""")
+    List<Object[]> getProductRevenueByDate();
 }
 

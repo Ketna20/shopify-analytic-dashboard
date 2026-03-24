@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 
 public class MomentumProductDTO {
     private String productName;
-    private BigDecimal recentRevenue;
-    private BigDecimal previousRevenue;
-    private Double growthRatio;
+    private Double momentum;
+    private Double pastRevenue;
+    private Double recentRevenue;
 
-    public MomentumProductDTO(String productName, BigDecimal recentRevenue, BigDecimal previousRevenue, Double growthRatio) {
+    public MomentumProductDTO(String productName, Double momentum, Double pastRevenue, Double recentRevenue) {
         this.productName = productName;
+        this.momentum = momentum;
+        this.pastRevenue = pastRevenue;
         this.recentRevenue = recentRevenue;
-        this.previousRevenue = previousRevenue;
-        this.growthRatio = growthRatio;
     }
 
     public String getProductName() { return productName; }
-    public BigDecimal getRecentRevenue() { return recentRevenue; }
-    public BigDecimal getPreviousRevenue() { return previousRevenue; }
-    public Double getGrowthRatio() { return growthRatio; }
+    public Double getMomentum() { return momentum; }
+    public Double getPastRevenue() { return pastRevenue; }
+    public Double getRecentRevenue() { return recentRevenue; }
 }

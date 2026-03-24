@@ -5,19 +5,19 @@ import com.ketna.shopify_analytics.entity.OrderItem;
 import com.ketna.shopify_analytics.repository.OrderItemRepository;
 import com.ketna.shopify_analytics.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class AnalyticsService {
+    @Autowired
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
 
@@ -73,58 +73,62 @@ public class AnalyticsService {
 
     public List<MomentumProductDTO> getMomentumProducts() {
 
-        List<OrderItem> items = orderItemRepository.findAll();
+        List<Object[]> rows = orderItemRepository.getProductRevenueByDate();
 
-        Map<String, Map<LocalDate, BigDecimal>> productDailyRevenue = new HashMap<>();
+        Map<String, Map<LocalDate, Double>> data = new HashMap<>();
 
-        for (OrderItem item : items) {
-            String productName = item.getProduct().getTitle();
-            LocalDate date = item.getOrder().getOrderDate().toLocalDate();
+        for (Object[] row : rows) {
+            String product = (String) row[0];
 
-            BigDecimal revenue = item.getPrice()
-                    .multiply(BigDecimal.valueOf(item.getQuantity()));
+            LocalDate date;
+            if (row[1] instanceof java.sql.Date sqlDate) {
+                date = sqlDate.toLocalDate();
+            } else {
+                date = ((java.util.Date) row[1]).toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+            }
 
-            productDailyRevenue
-                    .computeIfAbsent(productName, k -> new HashMap<>())
-                    .merge(date, revenue, BigDecimal::add);
+            Double revenue = ((Number) row[2]).doubleValue();
+
+            data.computeIfAbsent(product, k -> new TreeMap<>())
+                    .put(date, revenue);
         }
+
+        // DEBUG (important for you right now)
+        System.out.println("---- MOMENTUM DEBUG ----");
+        data.forEach((p, d) -> System.out.println(p + " -> " + d));
 
         List<MomentumProductDTO> result = new ArrayList<>();
 
-        for (String product : productDailyRevenue.keySet()) {
+        for (String product : data.keySet()) {
 
-            Map<LocalDate, BigDecimal> revenueMap = productDailyRevenue.get(product);
+            List<Double> values = new ArrayList<>(data.get(product).values());
 
-            List<LocalDate> dates = revenueMap.keySet().stream().sorted().toList();
+            if (values.size() < 2) continue;
 
-            if (dates.size() < 4) continue;
+            int mid = values.size() / 2;
 
-            int size = dates.size();
+            double past = values.subList(0, mid)
+                    .stream().mapToDouble(Double::doubleValue).sum();
 
-            BigDecimal recent = BigDecimal.ZERO;
-            BigDecimal previous = BigDecimal.ZERO;
+            double recent = values.subList(mid, values.size())
+                    .stream().mapToDouble(Double::doubleValue).sum();
 
-            // Last 2 days
-            for (int i = size - 2; i < size; i++) {
-                recent = recent.add(revenueMap.get(dates.get(i)));
+            if (past == 0 && recent > 0) {
+                result.add(new MomentumProductDTO(product, 999.0, past, recent));
+                continue;
             }
 
-            // Previous 2 days
-            for (int i = size - 4; i < size - 2; i++) {
-                previous = previous.add(revenueMap.get(dates.get(i)));
-            }
+            if (past == 0) continue;
 
-            if (previous.compareTo(BigDecimal.ZERO) == 0) continue;
+            double momentum = recent / past;
 
-            double ratio = recent.doubleValue() / previous.doubleValue();
-
-            if (ratio >= 1.5) {
-                result.add(new MomentumProductDTO(product, recent, previous, ratio));
+            if (momentum >= 2.0) {
+                result.add(new MomentumProductDTO(product, momentum, past, recent));
             }
         }
 
-        return result.stream()
-                .sorted((a, b) -> Double.compare(b.getGrowthRatio(), a.getGrowthRatio()))
-                .toList();
+        return result;
     }
 }
