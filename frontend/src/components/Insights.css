@@ -1,0 +1,9 @@
+.insight-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.insight-item:last-child {
+  border-bottom: none;
+}
