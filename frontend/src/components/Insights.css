@@ -1,9 +1,36 @@
 .insight-item {
-  padding: 10px 0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #eee;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .insight-item:last-child {
   border-bottom: none;
+}
+
+/* types */
+
+.insight-item.positive {
+  background: #e6f9f0;
+  color: #1b7f5c;
+  border-left: 4px solid #16a34a;
+}
+
+.insight-item.warning {
+  background: #fff4e5;
+  color: #b26a00;
+  border-left: 4px solid #f97316;
+}
+.insight-item.negative {
+  background: #fdecea;
+  color: #b42318;
+}
+
+.insight-item.info {
+  background: #eef4ff;
+  color: #1d4ed8;
+  border-left: 4px solid #2563eb;
 }

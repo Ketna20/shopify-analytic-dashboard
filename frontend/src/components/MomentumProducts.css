@@ -1,0 +1,50 @@
+/* MomentumProducts.css */
+
+.card-style {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.momentum-card {
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: transform 0.2s ease;
+}
+
+.momentum-card:hover {
+  transform: translateY(-3px);
+}
+
+.momentum-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.momentum-name {
+  font-weight: 600;
+}
+
+.momentum-badge {
+  background: #2563eb;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.momentum-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+.momentum-details {
+  font-size: 14px;
+  color: #555;
+}

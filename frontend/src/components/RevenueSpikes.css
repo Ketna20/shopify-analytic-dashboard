@@ -1,0 +1,45 @@
+/* RevenueSpikes.css */
+.card-style {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+
+.spike-card {
+  background: linear-gradient(135deg, #fff, #fef3f2);
+  border: 1px solid #ffe4e2;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: transform 0.2s ease;
+}
+
+.spike-card:hover {
+  transform: translateY(-3px);
+}
+
+.spike-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.spike-badge {
+  background: #ef4444;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.spike-value {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.spike-growth {
+  color: #16a34a;
+  font-weight: 600;
+}

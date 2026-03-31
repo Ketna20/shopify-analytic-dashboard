@@ -1,12 +1,24 @@
 .container-style {
   padding: 30px;
   font-family: Arial, sans-serif;
-  background-color: #daeae5;  /* #f5f6fa */
+  background-color: #f5f6fa;
   min-height: 100vh;
 }
 
 .header-style {
   margin-bottom: 20px;
+}
+.demo-banner {
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .grid-style {

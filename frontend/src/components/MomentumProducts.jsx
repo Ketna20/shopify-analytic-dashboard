@@ -1,10 +1,5 @@
+import "./MomentumProducts.css";
 
-const cardStyle = {
-  background: "white",
-  padding: "20px",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.06)"
-};
 
 
 const MomentumProducts = ({ data }) => {
@@ -15,20 +10,23 @@ const MomentumProducts = ({ data }) => {
   }
 
   return (
-    <div style={cardStyle}>
-      <h3>🔥 Momentum Products</h3>
+    <div className="card-style">
+      <h3>🚀 Momentum Products</h3>
 
       {data.map((item, index) => (
-        <div key={index} className="row">
-          <span> {item.productName} </span>
+        <div key={`${item.productName}-${index}`} className="momentum-card">
+          <div className="momentum-header">
+            <span className="momentum-name">{item.productName}</span>
+            <span className="momentum-badge">🚀 Trending</span>
+          </div>
 
-          <span>
-            {item.momentum ? item.momentum : "0.00"} x 
-          </span>
+          <div className="momentum-value">
+            {Number(item.momentum || 0).toFixed(2)}x growth
+          </div>
 
-          <span>
-            ${item.recentRevenue}
-          </span>
+          <div className="momentum-details">
+            ${item.pastRevenue} → ${item.recentRevenue}
+          </div>
         </div>
       ))}
     </div>
