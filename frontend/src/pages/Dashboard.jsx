@@ -5,6 +5,7 @@ import {
   getKPIs,
   getRevenueSpikes,
   getMomentumProducts,
+  syncOrders,
 } from "../services/api";
 import {
   demoKPIs,
@@ -41,8 +42,11 @@ const getDateRange = (filter) => {
 
 const Dashboard = () => {
   const DEMO_MODE = false;
+  const STORE_ID = 2;
   const [dateFilter, setDateFilter] = useState("All Time");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState(null);
   const [revenue, setRevenue] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [kpis, setKpis] = useState(null);
@@ -171,8 +175,20 @@ const Dashboard = () => {
     return insights;
   };
 
-  console.log("DEMO SPIKES:", demoRevenueSpikes);
-  console.log("DEMO MOMENTUM:", demoMomentumProducts);
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncMessage(null);
+    try {
+      await syncOrders(STORE_ID);
+      setSyncMessage({ type: "success", text: "Sync complete! Data refreshed." });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      setSyncMessage({ type: "error", text: "Sync failed. Check backend logs." });
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMessage(null), 4000);
+    }
+  };
 
   return (
     <div className="container-style">
@@ -197,8 +213,18 @@ const Dashboard = () => {
           <button className="refresh-btn" onClick={() => setRefreshKey((k) => k + 1)}>
             Refresh
           </button>
+
+          <button className="sync-btn" onClick={handleSync} disabled={syncing}>
+            {syncing ? "Syncing..." : "⟳ Sync Shopify"}
+          </button>
         </div>
       </div>
+
+      {syncMessage && (
+        <div className={`sync-message ${syncMessage.type}`}>
+          {syncMessage.text}
+        </div>
+      )}
 
       {/* ✅ DEMO BANNER HERE
       {DEMO_MODE && (
