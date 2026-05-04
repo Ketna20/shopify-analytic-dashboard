@@ -21,8 +21,28 @@ import MomentumProducts from "../components/MomentumProducts";
 import Insights from "../components/Insights";
 import "./Dashboard.css";
 
+const getDateRange = (filter) => {
+  const to = new Date();
+  const from = new Date();
+
+  if (filter === "Today") {
+    // from and to are both today
+  } else if (filter === "Last 7 Days") {
+    from.setDate(from.getDate() - 6);
+  } else if (filter === "Last 30 Days") {
+    from.setDate(from.getDate() - 29);
+  } else {
+    return { from: "2000-01-01", to: to.toISOString().split("T")[0] };
+  }
+
+  const fmt = (d) => d.toISOString().split("T")[0];
+  return { from: fmt(from), to: fmt(to) };
+};
+
 const Dashboard = () => {
   const DEMO_MODE = false;
+  const [dateFilter, setDateFilter] = useState("All Time");
+  const [refreshKey, setRefreshKey] = useState(0);
   const [revenue, setRevenue] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [kpis, setKpis] = useState(null);
@@ -46,20 +66,19 @@ const Dashboard = () => {
     const loadData = async () => {
       try {
         if (DEMO_MODE) {
-          // 👉 Demo mode (instant UI)
           setRevenue(demoRevenue);
           setTopProducts(demoTopProducts);
           setKpis(demoKPIs);
           setSpikes(normalize(demoRevenueSpikes));
           setMomentumProducts(normalize(demoMomentumProducts));
         } else {
-          // 👉 Real API mode
+          const { from, to } = getDateRange(dateFilter);
           const [rev, top, kpi, spike, momentum] = await Promise.all([
-            getRevenue(),
-            getTopProducts(),
-            getKPIs(),
-            getRevenueSpikes(),
-            getMomentumProducts(),
+            getRevenue(from, to),
+            getTopProducts(from, to),
+            getKPIs(from, to),
+            getRevenueSpikes(from, to),
+            getMomentumProducts(from, to),
           ]);
 
           setRevenue(rev.data);
@@ -74,7 +93,7 @@ const Dashboard = () => {
     };
 
     loadData();
-  }, []);
+  }, [dateFilter, refreshKey]);
 
   const getInsights = () => {
     if (!kpis || !revenue.length) return [];
@@ -164,13 +183,20 @@ const Dashboard = () => {
         </div>
 
         <div className="header-actions">
-          <select className="date-filter">
+          <select
+            className="date-filter"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          >
+            <option>All Time</option>
             <option>Today</option>
             <option>Last 7 Days</option>
             <option>Last 30 Days</option>
           </select>
 
-          <button className="refresh-btn">Refresh</button>
+          <button className="refresh-btn" onClick={() => setRefreshKey((k) => k + 1)}>
+            Refresh
+          </button>
         </div>
       </div>
 

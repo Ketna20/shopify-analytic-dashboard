@@ -4,13 +4,11 @@ import "./MomentumProducts.css";
 
 const MomentumProducts = ({ data }) => {
   if (!data || data.length === 0) {
-    return <div>No momentum products</div>;
-  } else {
-    console.log("MomentumProducts data:", data);
+    return <div style={{ color: "#a0a0a0", fontSize: "13px" }}>No momentum products in this period</div>;
   }
 
   return (
-    <div className="card-style">
+    <div>
       <h3>🚀 Momentum Products</h3>
 
       {data.map((item, index) => (

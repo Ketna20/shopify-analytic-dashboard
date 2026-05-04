@@ -1,7 +1,6 @@
 package com.ketna.shopify_analytics.service;
 
 import com.ketna.shopify_analytics.dto.analytics.*;
-import com.ketna.shopify_analytics.entity.OrderItem;
 import com.ketna.shopify_analytics.repository.OrderItemRepository;
 import com.ketna.shopify_analytics.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -21,12 +22,14 @@ public class AnalyticsService {
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
 
-    public List<TopProductDTO> getTopProducts() {
-        return orderItemRepository.findTopProducts();
+    public List<TopProductDTO> getTopProducts(LocalDate from, LocalDate to) {
+        LocalDateTime fromDT = from.atStartOfDay();
+        LocalDateTime toDT = to.atTime(LocalTime.MAX);
+        return orderItemRepository.findTopProducts(fromDT, toDT);
     }
 
-    public List<RevenueDTO> getRevenueOverTime() {
-        List<Object[]> results = orderRepository.getRevenueRaw();
+    public List<RevenueDTO> getRevenueOverTime(LocalDate from, LocalDate to) {
+        List<Object[]> results = orderRepository.getRevenueRaw(from, to);
 
         return results.stream()
                 .map(r -> new RevenueDTO(
@@ -36,13 +39,15 @@ public class AnalyticsService {
                 .toList();
     }
 
-    public DashboardKPIDTO getDashboardKPIs() {
-        return orderRepository.getDashboardKPIs();
+    public DashboardKPIDTO getDashboardKPIs(LocalDate from, LocalDate to) {
+        LocalDateTime fromDT = from.atStartOfDay();
+        LocalDateTime toDT = to.atTime(LocalTime.MAX);
+        return orderRepository.getDashboardKPIs(fromDT, toDT);
     }
 
-    public List<RevenueSpikeDTO> getRevenueSpikes() {
+    public List<RevenueSpikeDTO> getRevenueSpikes(LocalDate from, LocalDate to) {
 
-        List<RevenueDTO> revenueData = getRevenueOverTime();
+        List<RevenueDTO> revenueData = getRevenueOverTime(from, to);
 
         List<RevenueSpikeDTO> spikes = new ArrayList<>();
 
@@ -71,9 +76,10 @@ public class AnalyticsService {
         return spikes;
     }
 
-    public List<MomentumProductDTO> getMomentumProducts() {
-
-        List<Object[]> rows = orderItemRepository.getProductRevenueByDate();
+    public List<MomentumProductDTO> getMomentumProducts(LocalDate from, LocalDate to) {
+        LocalDateTime fromDT = from.atStartOfDay();
+        LocalDateTime toDT = to.atTime(LocalTime.MAX);
+        List<Object[]> rows = orderItemRepository.getProductRevenueByDate(fromDT, toDT);
 
         Map<String, Map<LocalDate, Double>> data = new HashMap<>();
 

@@ -4,7 +4,7 @@ const RevenueSpikes = ({ data }) => {
   if (!data || data.length === 0) return null;
 
   return (
-    <div className="card-style">
+    <div>
       <h3>🔥 Revenue Spikes</h3>
       {data.map((spike, index) => (
         <div

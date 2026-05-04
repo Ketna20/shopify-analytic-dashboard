@@ -4,11 +4,14 @@ import com.ketna.shopify_analytics.dto.analytics.DashboardKPIDTO;
 import com.ketna.shopify_analytics.dto.analytics.RevenueDTO;
 import com.ketna.shopify_analytics.entity.Order;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -17,10 +20,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = """
     SELECT DATE(order_date) as date, SUM(total_price) as revenue
     FROM orders
+    WHERE DATE(order_date) BETWEEN :from AND :to
     GROUP BY DATE(order_date)
     ORDER BY DATE(order_date)
 """, nativeQuery = true)
-    List<Object[]> getRevenueRaw();
+    List<Object[]> getRevenueRaw(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
     @Query("""
     SELECT new com.ketna.shopify_analytics.dto.analytics.DashboardKPIDTO(
@@ -29,7 +33,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
         AVG(o.totalPrice)
     )
     FROM Order o
+    WHERE o.orderDate >= :from AND o.orderDate <= :to
 """)
-    DashboardKPIDTO getDashboardKPIs();
+    DashboardKPIDTO getDashboardKPIs(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 }
 

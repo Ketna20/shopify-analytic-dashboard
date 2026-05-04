@@ -1,45 +1,49 @@
-/* RevenueSpikes.css */
-.card-style {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
-
-
 .spike-card {
-  background: linear-gradient(135deg, #fff, #fef3f2);
-  border: 1px solid #ffe4e2;
-  border-radius: 14px;
+  background: #212121;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #008060;
+  border-radius: 10px;
   padding: 16px;
   margin-bottom: 12px;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .spike-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+  border-left-color: #00a47c;
 }
 
 .spike-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .spike-badge {
-  background: #ef4444;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 6px;
+  background: rgba(0, 128, 96, 0.15);
+  color: #00a47c;
+  border: 1px solid rgba(0, 128, 96, 0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
   font-size: 12px;
+  font-weight: 600;
+}
+
+.spike-date {
+  font-size: 12px;
+  color: #a0a0a0;
 }
 
 .spike-value {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
 }
 
 .spike-growth {
-  color: #16a34a;
+  font-size: 13px;
   font-weight: 600;
+  color: #00a47c;
 }
