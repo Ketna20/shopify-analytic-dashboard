@@ -6,7 +6,9 @@ import com.ketna.shopify_analytics.entity.OrderItem;
 import com.ketna.shopify_analytics.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,19 +23,22 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
         )
         FROM OrderItem oi
         JOIN oi.product p
+        JOIN oi.order o
+        WHERE o.orderDate >= :from AND o.orderDate <= :to
         GROUP BY p.title
         ORDER BY SUM(oi.quantity * oi.price) DESC
     """)
-    List<TopProductDTO> findTopProducts();
+    List<TopProductDTO> findTopProducts(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query("""
     SELECT p.title, DATE(o.orderDate), SUM(oi.quantity * oi.price)
     FROM OrderItem oi
     JOIN oi.order o
     JOIN oi.product p
+    WHERE o.orderDate >= :from AND o.orderDate <= :to
     GROUP BY p.title, DATE(o.orderDate)
     ORDER BY p.title, DATE(o.orderDate)
 """)
-    List<Object[]> getProductRevenueByDate();
+    List<Object[]> getProductRevenueByDate(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 }
 

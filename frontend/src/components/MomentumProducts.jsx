@@ -1,34 +1,30 @@
+import "./MomentumProducts.css";
 
-const cardStyle = {
-  background: "white",
-  padding: "20px",
-  borderRadius: "12px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.06)"
-};
 
 
 const MomentumProducts = ({ data }) => {
   if (!data || data.length === 0) {
-    return <div>No momentum products</div>;
-  } else {
-    console.log("MomentumProducts data:", data);
+    return <div style={{ color: "#a0a0a0", fontSize: "13px" }}>No momentum products in this period</div>;
   }
 
   return (
-    <div style={cardStyle}>
-      <h3>🔥 Momentum Products</h3>
+    <div>
+      <h3>🚀 Momentum Products</h3>
 
       {data.map((item, index) => (
-        <div key={index} className="row">
-          <span> {item.productName} </span>
+        <div key={`${item.productName}-${index}`} className="momentum-card">
+          <div className="momentum-header">
+            <span className="momentum-name">{item.productName}</span>
+            <span className="momentum-badge">🚀 Trending</span>
+          </div>
 
-          <span>
-            {item.momentum ? item.momentum : "0.00"} x 
-          </span>
+          <div className="momentum-value">
+            {Number(item.momentum || 0).toFixed(2)}x growth
+          </div>
 
-          <span>
-            ${item.recentRevenue}
-          </span>
+          <div className="momentum-details">
+            ${item.pastRevenue} → ${item.recentRevenue}
+          </div>
         </div>
       ))}
     </div>

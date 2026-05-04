@@ -7,11 +7,14 @@ const Insights = ({ insights }) => {
 
   return (
     <div className="card-style">
-      <h3>💡 Insights</h3>
+      <h3>💡 Smart Insights</h3>
 
       {insights.map((insight, index) => (
-        <div key={index} className="insight-item">
-          {insight}
+        <div
+          key={`${insight.message}-${index}`}
+          className={`insight-item ${insight.type}`}
+        >
+          {insight.message}
         </div>
       ))}
     </div>
