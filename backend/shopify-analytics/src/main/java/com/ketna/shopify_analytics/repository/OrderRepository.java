@@ -1,6 +1,7 @@
 package com.ketna.shopify_analytics.repository;
 
 import com.ketna.shopify_analytics.dto.analytics.DashboardKPIDTO;
+import com.ketna.shopify_analytics.dto.analytics.OrderDTO;
 import com.ketna.shopify_analytics.dto.analytics.RevenueDTO;
 import com.ketna.shopify_analytics.entity.Order;
 
@@ -9,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -36,5 +39,22 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     WHERE o.orderDate >= :from AND o.orderDate <= :to
 """)
     DashboardKPIDTO getDashboardKPIs(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+    @Query("""
+    SELECT new com.ketna.shopify_analytics.dto.analytics.OrderDTO(
+        o.shopifyOrderId,
+        o.orderDate,
+        c.firstName,
+        c.lastName,
+        c.email,
+        o.totalPrice,
+        o.currency
+    )
+    FROM Order o
+    LEFT JOIN o.customer c
+    WHERE o.orderDate >= :from AND o.orderDate <= :to
+    ORDER BY o.orderDate DESC
+""")
+    Page<OrderDTO> findOrdersByDateRange(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to, Pageable pageable);
 }
 

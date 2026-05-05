@@ -75,3 +75,19 @@
   color: #fc8181;
   border: 1px solid rgba(229, 62, 62, 0.3);
 }
+
+.kpi-card--clickable {
+  cursor: pointer;
+}
+
+.kpi-hint {
+  font-size: 11px;
+  color: #008060;
+  margin-top: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.kpi-card--clickable:hover .kpi-hint {
+  opacity: 1;
+}

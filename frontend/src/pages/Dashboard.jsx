@@ -20,6 +20,7 @@ import KPICards from "../components/KPICards";
 import RevenueSpikes from "../components/RevenueSpikes";
 import MomentumProducts from "../components/MomentumProducts";
 import Insights from "../components/Insights";
+import OrdersModal from "../components/OrdersModal";
 import "./Dashboard.css";
 
 const getDateRange = (filter) => {
@@ -47,6 +48,7 @@ const Dashboard = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(null);
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
   const [revenue, setRevenue] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
   const [kpis, setKpis] = useState(null);
@@ -231,7 +233,7 @@ const Dashboard = () => {
         <div className="demo-banner">🚀 Demo Mode — Sample Data</div>
       )} */}
 
-      <KPICards data={kpis} />
+      <KPICards data={kpis} onOrdersClick={() => setShowOrdersModal(true)} />
 
       <div className="grid-style">
         <div className="card-style">
@@ -253,6 +255,14 @@ const Dashboard = () => {
       <div className="grid-style">
         <Insights insights={getInsights()} />
       </div>
+
+      {showOrdersModal && (
+        <OrdersModal
+          from={getDateRange(dateFilter).from}
+          to={getDateRange(dateFilter).to}
+          onClose={() => setShowOrdersModal(false)}
+        />
+      )}
     </div>
   );
 };

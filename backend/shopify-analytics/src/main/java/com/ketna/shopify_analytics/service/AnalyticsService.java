@@ -5,6 +5,8 @@ import com.ketna.shopify_analytics.repository.OrderItemRepository;
 import com.ketna.shopify_analytics.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -136,5 +138,11 @@ public class AnalyticsService {
         }
 
         return result;
+    }
+
+    public Page<OrderDTO> getOrders(LocalDate from, LocalDate to, int page, int size) {
+        LocalDateTime fromDT = from.atStartOfDay();
+        LocalDateTime toDT = to.atTime(LocalTime.MAX);
+        return orderRepository.findOrdersByDateRange(fromDT, toDT, PageRequest.of(page, size));
     }
 }

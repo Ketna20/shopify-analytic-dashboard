@@ -17,7 +17,8 @@ public class ShopifyOrderService {
     private final ShopifyAuthService shopifyAuthService;
 
     public String fetchOrders(Store store) {
-        String url = "https://" + store.getShopDomain() + "/admin/api/2024-01/orders.json";
+        String url = "https://" + store.getShopDomain()
+                + "/admin/api/2024-01/orders.json?status=any&limit=250";
 
         String accessToken = shopifyAuthService.generateAccessToken(store.getShopDomain());
         HttpHeaders headers = new HttpHeaders();
