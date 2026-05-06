@@ -11,3 +11,8 @@ spring.jpa.show-sql=true
 # Shopify app credentials (kept on backend; do NOT send client_secret from frontend)
 shopify.client-id=CHANGE_ME
 shopify.client-secret=CHANGE_ME
+
+# Scheduler: cron expression for nightly order sync (default: 2:00 AM Pacific)
+# Format: second minute hour day month weekday
+# Examples: "0 0 2 * * *" = 2AM daily, "0 0 0 * * *" = midnight daily
+sync.cron=0 0 2 * * *

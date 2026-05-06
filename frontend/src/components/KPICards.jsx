@@ -1,54 +1,46 @@
 import "./KPICards.css";
 
-const KPICards = ({ data }) => {
+const KPICards = ({ data, onOrdersClick }) => {
   if (!data) return null;
 
   const kpis = [
     {
       title: "Total Revenue",
       value: `$${Number(data.totalRevenue).toFixed(2)}`,
-      trend: "+12%", // UI only
+      trend: "+12%",
       trendType: "positive",
-      icon: "revenue",
     },
     {
       title: "Total Orders",
       value: data.totalOrders,
       trend: "+5%",
       trendType: "positive",
-      icon: "orders",
+      clickable: true,
     },
     {
       title: "Avg Order Value",
       value: `$${Number(data.avgOrderValue).toFixed(2)}`,
       trend: "-2%",
       trendType: "negative",
-      icon: "avg",
     },
   ];
 
   return (
-    // <div className="kpi-container">
-    //   {kpis.map((kpi, index) => (
-    //     <div key={index} className="kpi-card">
-    //       <div className="kpi-title">{kpi.title}</div>
-    //       <div className="kpi-value">{kpi.value}</div>
-    //     </div>
-    //   ))}
-    // </div>
     <div className="kpi-container">
-      {kpis.map((kpis, index) => (
-        <div key={index} className="kpi-card">
-          <div className="kpi-title">{kpis.title}</div>
-          <div className="kpi-value">{kpis.value}</div>
-
-          <div
-            className={
-              kpis.trendType === "positive" ? "trend green" : "trend red"
-            }
-          >
-            {kpis.trend}
+      {kpis.map((kpi, index) => (
+        <div
+          key={index}
+          className={`kpi-card ${kpi.clickable ? "kpi-card--clickable" : ""}`}
+          onClick={kpi.clickable ? onOrdersClick : undefined}
+        >
+          <div className="kpi-title">{kpi.title}</div>
+          <div className="kpi-value">{kpi.value}</div>
+          <div className={kpi.trendType === "positive" ? "trend green" : "trend red"}>
+            {kpi.trend}
           </div>
+          {kpi.clickable && (
+            <div className="kpi-hint">Click to view orders</div>
+          )}
         </div>
       ))}
     </div>

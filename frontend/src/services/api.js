@@ -12,3 +12,6 @@ export const getRevenue = (from, to) => api.get("/analytics/revenue", { params: 
 export const getKPIs = (from, to) => api.get("/analytics/kpis", { params: { from, to } });
 export const getRevenueSpikes = (from, to) => api.get("/analytics/revenue-spikes", { params: { from, to } });
 export const getMomentumProducts = (from, to) => api.get("/analytics/momentum-products", { params: { from, to } });
+export const syncOrders = (storeId) => api.post(`/orders/sync/${storeId}`);
+export const getOrders = (from, to, page = 0, size = 20) =>
+  api.get("/analytics/orders", { params: { from, to, page, size } });

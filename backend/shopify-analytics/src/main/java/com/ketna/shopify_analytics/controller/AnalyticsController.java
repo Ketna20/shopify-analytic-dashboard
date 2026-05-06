@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 @RestController
 @RequestMapping("/api/analytics")
 @RequiredArgsConstructor
@@ -63,5 +65,15 @@ public class AnalyticsController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         LocalDate[] range = resolveDateRange(from, to);
         return analyticsService.getMomentumProducts(range[0], range[1]);
+    }
+
+    @GetMapping("/orders")
+    public Page<OrderDTO> getOrders(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        LocalDate[] range = resolveDateRange(from, to);
+        return analyticsService.getOrders(range[0], range[1], page, size);
     }
 }

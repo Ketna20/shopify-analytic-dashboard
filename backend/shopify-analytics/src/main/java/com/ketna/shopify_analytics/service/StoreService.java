@@ -15,17 +15,13 @@ public class StoreService {
     private final StoreRepository storeRepository;
 
     public Store connectStore(ConnectStoreRequest request) {
-        return saveStore(request.getShopDomain());
-    }
-
-    public Store saveStore(String shopDomain) {
-
-        Store store = Store.builder()
-                .shopDomain(shopDomain)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        return storeRepository.save(store);
+        return storeRepository.findByShopDomain(request.getShopDomain())
+                .orElseGet(() -> storeRepository.save(
+                        Store.builder()
+                                .shopDomain(request.getShopDomain())
+                                .createdAt(LocalDateTime.now())
+                                .build()
+                ));
     }
 }
 
